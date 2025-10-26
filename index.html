@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FlowFocus</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+    <div class="timer">
+        <span id="time">25:00</span>
+
+        <div class="session-selector">
+            <button class="preset" data-work="25" data-break="5">25+5</button>
+            <button class="preset" data-work="45" data-break="15">45+15</button>
+
+            <div class="custom-session">
+                <input type="number" id="customWork" min="1" placeholder="Work (min)">
+                <input type="number" id="customBreak" min="1" placeholder="Break (min)">
+                <button id="customBtn">Set Custom</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+        <button id="reset">Reset</button>
+    </div>
+</div>
+
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
