@@ -1,0 +1,96 @@
+// ------------------ Variables ------------------
+let workSeconds = 25 * 60;
+let breakSeconds = 5 * 60;
+let totalSeconds = workSeconds;
+let interval;
+let onBreak = false;
+const timeDisplay = document.getElementById('time');
+const startBtn = document.getElementById('start');
+const stopBtn = document.getElementById('stop');
+const resetBtn = document.getElementById('reset');
+const timerEl = document.querySelector('.timer');
+const presetButtons = document.querySelectorAll('.preset');
+const customWorkInput = document.getElementById('customWork');
+const customBreakInput = document.getElementById('customBreak');
+const customBtn = document.getElementById('customBtn');
+// ------------------ Functions ------------------
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+function updateDisplay() {
+    timeDisplay.textContent = formatTime(totalSeconds);
+}
+function startTimer() {
+    if (interval)
+        return; // prevent multiple intervals
+    timerEl.classList.add('timer-active');
+    interval = setInterval(() => {
+        if (totalSeconds > 0) {
+            totalSeconds--;
+            updateDisplay();
+        }
+        else {
+            clearInterval(interval);
+            interval = undefined;
+            if (!onBreak) {
+                // Switch to break
+                onBreak = true;
+                totalSeconds = breakSeconds;
+                startTimer();
+            }
+            else {
+                alert('Session complete!');
+                onBreak = false;
+                totalSeconds = workSeconds;
+                updateDisplay();
+                timerEl.classList.remove('timer-active');
+            }
+        }
+    }, 1000);
+}
+function stopTimer() {
+    clearInterval(interval);
+    interval = undefined;
+    timerEl.classList.remove('timer-active');
+}
+function resetTimer() {
+    stopTimer();
+    onBreak = false;
+    totalSeconds = workSeconds;
+    updateDisplay();
+}
+// ------------------ Preset Button Logic ------------------
+presetButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        workSeconds = parseInt(button.dataset.work) * 60;
+        breakSeconds = parseInt(button.dataset.break) * 60;
+        totalSeconds = workSeconds;
+        onBreak = false;
+        updateDisplay();
+    });
+});
+// ------------------ Custom Session ------------------
+customBtn.addEventListener('click', () => {
+    const work = parseInt(customWorkInput.value);
+    const brk = parseInt(customBreakInput.value);
+    if (!isNaN(work) && !isNaN(brk)) {
+        workSeconds = work * 60;
+        breakSeconds = brk * 60;
+        totalSeconds = workSeconds;
+        onBreak = false;
+        updateDisplay();
+    }
+    else {
+        alert('Enter valid numbers for work and break');
+    }
+});
+// ------------------ Button Events ------------------
+startBtn.addEventListener('click', startTimer);
+stopBtn.addEventListener('click', stopTimer);
+resetBtn.addEventListener('click', resetTimer);
+// ------------------ Init ------------------
+updateDisplay();
+export {};
+//# sourceMappingURL=main.js.map
