@@ -23,39 +23,29 @@ body {
     height: 450px;
     border-radius: 50%;
     background: #0f0f0f;
-    position: relative;      /* for absolute child positioning */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* start from top */
+    justify-content: center;
     align-items: center;
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
-    padding-top: 60px; /* space from top edge for timer text */
+    gap: 2rem;
+    padding: 2rem;
+    box-sizing: border-box;
 }
 
 /* Timer text */
 #time {
     font-size: 3rem;
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 /* Session selector container inside circle */
 .session-selector {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
+    align-items: center;
 }
-
-/* Presets row: 25+5 and 45+15 side by side */
-.presets {
-    display: flex;
-    flex-direction: row; /* side by side */
-    gap: 1rem;           /* spacing between buttons */
-}
-
 
 /* Preset buttons */
 .session-selector button.preset {
@@ -76,6 +66,7 @@ body {
 
 /* Custom session below presets */
 .custom-session {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -149,4 +140,19 @@ select, input {
 
 select:hover, input:hover {
     border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Timer Active State --- */
+.timer.timer-active #time {
+    transform: scale(1.5);
+}
+
+.timer.timer-active .session-selector {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* --- Transitions --- */
+#time, .session-selector {
+    transition: all 0.5s ease-in-out;
 }

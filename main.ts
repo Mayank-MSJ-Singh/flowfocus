@@ -9,6 +9,7 @@ const timeDisplay = document.getElementById('time') as HTMLElement;
 const startBtn = document.getElementById('start') as HTMLButtonElement;
 const stopBtn = document.getElementById('stop') as HTMLButtonElement;
 const resetBtn = document.getElementById('reset') as HTMLButtonElement;
+const timerEl = document.querySelector('.timer') as HTMLElement;
 
 const presetButtons = document.querySelectorAll<HTMLButtonElement>('.preset');
 const customWorkInput = document.getElementById('customWork') as HTMLInputElement;
@@ -19,7 +20,7 @@ const customBtn = document.getElementById('customBtn') as HTMLButtonElement;
 function formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
 function updateDisplay() {
@@ -28,6 +29,7 @@ function updateDisplay() {
 
 function startTimer() {
     if (interval) return; // prevent multiple intervals
+    timerEl.classList.add('timer-active');
     interval = setInterval(() => {
         if (totalSeconds > 0) {
             totalSeconds--;
@@ -45,16 +47,16 @@ function startTimer() {
                 onBreak = false;
                 totalSeconds = workSeconds;
                 updateDisplay();
+                timerEl.classList.remove('timer-active');
             }
         }
     }, 1000);
 }
 
 function stopTimer() {
-    if (interval) {
-        clearInterval(interval);
-        interval = undefined;
-    }
+    clearInterval(interval);
+    interval = undefined;
+    timerEl.classList.remove('timer-active');
 }
 
 function resetTimer() {
