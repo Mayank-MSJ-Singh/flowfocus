@@ -13,6 +13,7 @@ const presetButtons = document.querySelectorAll('.preset');
 const customWorkInput = document.getElementById('customWork');
 const customBreakInput = document.getElementById('customBreak');
 const customBtn = document.getElementById('customBtn');
+const rain = document.getElementById('rain');
 // ------------------ Functions ------------------
 function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
@@ -26,6 +27,8 @@ function startTimer() {
     if (interval)
         return; // prevent multiple intervals
     timerEl.classList.add('timer-active');
+    rain.load();
+    rain.play().catch(err => console.log("Autoplay blocked:", err));
     interval = setInterval(() => {
         if (totalSeconds > 0) {
             totalSeconds--;
@@ -52,6 +55,8 @@ function startTimer() {
 }
 function stopTimer() {
     clearInterval(interval);
+    rain.pause();
+    rain.currentTime = 0;
     interval = undefined;
     timerEl.classList.remove('timer-active');
 }
