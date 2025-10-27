@@ -166,3 +166,19 @@ select:hover, input:hover {
     opacity: 0;
     visibility: hidden;
 }
+
+#rainImage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    pointer-events: none; /* allows clicks to pass through */
+    z-index: 10;
+}
+
+#rainImage.fade-in {
+    transition: opacity 5s ease; /* smooth fade */
+}
