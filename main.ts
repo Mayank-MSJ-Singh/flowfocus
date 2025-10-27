@@ -2,6 +2,7 @@
 let workSeconds = 25 * 60;
 let breakSeconds = 5 * 60;
 let totalSeconds = workSeconds;
+let fadeIn: number | undefined;
 let interval: number | undefined;
 let onBreak = false;
 
@@ -32,8 +33,25 @@ function updateDisplay() {
 function startTimer() {
     if (interval) return; // prevent multiple intervals
     timerEl.classList.add('timer-active');
-    rain.load();
-    rain.play().catch(err => console.log("Autoplay blocked:", err));
+    // ✅ Only play rain during work time
+    if (!onBreak) {
+        rain.volume = 0;
+        rain.play().catch(err => console.log("Autoplay blocked:", err));
+        const fadeDuration = 10; // seconds
+        const fadeSteps = 20; // how many times we adjust volume
+        const stepTime = (fadeDuration / fadeSteps) * 1000; // ms per step
+        const stepSize = 1 / fadeSteps;
+
+        let currentVolume = 0;
+        fadeIn = setInterval(() => {
+            currentVolume += stepSize;
+            if (currentVolume >= 1) {
+                currentVolume = 1;
+                clearInterval(fadeIn);
+            }
+            rain.volume = currentVolume;
+        }, stepTime);
+    }
     interval = setInterval(() => {
         if (totalSeconds > 0) {
             totalSeconds--;
@@ -43,6 +61,7 @@ function startTimer() {
             interval = undefined;
             if (!onBreak) {
                 // Switch to break
+                rain.pause(); // stop rain
                 onBreak = true;
                 totalSeconds = breakSeconds;
                 startTimer();
@@ -59,6 +78,7 @@ function startTimer() {
 
 function stopTimer() {
     clearInterval(interval);
+    clearInterval(fadeIn);
     rain.pause();
     rain.currentTime = 0;
     interval = undefined;
@@ -66,6 +86,8 @@ function stopTimer() {
 }
 
 function resetTimer() {
+    rain.pause();
+    rain.currentTime = 0;
     stopTimer();
     onBreak = false;
     totalSeconds = workSeconds;
