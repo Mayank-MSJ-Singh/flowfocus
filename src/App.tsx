@@ -85,7 +85,7 @@ function App() {
                 />
             </div>
             <Controls start={startTimer} stop={stopTimer} reset={resetTimer} />
-            <Background ref={backgroundRef} />
+            <Background ref={backgroundRef} isRunning={isRunning} onBreak={onBreak} />
         </div>
     );
 }

@@ -8,10 +8,11 @@ type BackgroundHandles = {
 };
 
 type BackgroundProps = {
-    // isRunning and onBreak are no longer needed as props for idle tracking logic within Background.tsx
+    isRunning: boolean;
+    onBreak: boolean;
 };
 
-const Background = forwardRef<BackgroundHandles, BackgroundProps>((props, ref) => {
+const Background = forwardRef<BackgroundHandles, BackgroundProps>(({ isRunning, onBreak }, ref) => {
     const rainAudioRef = useRef<HTMLAudioElement>(null);
     const rainImageRef = useRef<HTMLImageElement>(null);
     const idleTimeoutRef = useRef<number | null>(null);
@@ -26,7 +27,7 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>((props, ref) =
     }, []);
 
     const hideIdleBackground = useCallback(() => {
-        console.log("hideIdleBackground called. rainImageRef.current:", rainImageRef.current);
+        console.log("hideIdleBackground called. isRunning:", isRunning, "onBreak:", onBreak, "rainImageRef.current:", rainImageRef.current);
         if (rainImageRef.current) {
             rainImageRef.current.classList.remove('fade-in');
             rainImageRef.current.style.opacity = '0';
@@ -34,24 +35,43 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>((props, ref) =
         if (idleTimeoutRef.current) {
             clearTimeout(idleTimeoutRef.current);
         }
-        // The decision to restart idle timer is now handled by App.tsx calling enableIdleTracking
-    }, []);
+        // restart idle timer only if running and not on break
+        if (isRunning && !onBreak) {
+            idleTimeoutRef.current = window.setTimeout(showIdleBackground, 5000); // 5s idle delay
+        }
+    }, [isRunning, onBreak, showIdleBackground]);
 
     const enableIdleTracking = useCallback(() => {
         console.log("enableIdleTracking called");
-        document.addEventListener('mousemove', hideIdleBackground);
+        // Event listener will be managed by useEffect
         idleTimeoutRef.current = window.setTimeout(showIdleBackground, 5000);
-    }, [hideIdleBackground, showIdleBackground]);
+    }, [showIdleBackground]);
 
     const disableIdleTracking = useCallback(() => {
         console.log("disableIdleTracking called");
-        document.removeEventListener('mousemove', hideIdleBackground);
+        // Event listener will be managed by useEffect
         if (idleTimeoutRef.current) {
             clearTimeout(idleTimeoutRef.current);
             idleTimeoutRef.current = null;
         }
         if (rainImageRef.current) rainImageRef.current.style.opacity = '0';
-    }, [hideIdleBackground]);
+    }, []);
+
+    // useEffect to manage mousemove event listener
+    useEffect(() => {
+        if (isRunning && !onBreak) {
+            document.addEventListener('mousemove', hideIdleBackground);
+        } else {
+            document.removeEventListener('mousemove', hideIdleBackground);
+            if (idleTimeoutRef.current) {
+                clearTimeout(idleTimeoutRef.current);
+                idleTimeoutRef.current = null;
+            }
+        }
+        return () => {
+            document.removeEventListener('mousemove', hideIdleBackground);
+        };
+    }, [isRunning, onBreak, hideIdleBackground]);
 
     useImperativeHandle(ref, () => ({
         enableIdleTracking,
@@ -105,4 +125,5 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>((props, ref) =
 });
 
 export default Background;
+
 
