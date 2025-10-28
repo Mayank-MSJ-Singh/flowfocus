@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 
-type BackgroundHandles = {
+export type BackgroundHandles = {
     enableIdleTracking: () => void;
     disableIdleTracking: () => void;
     startAudioFadeIn: () => void;
