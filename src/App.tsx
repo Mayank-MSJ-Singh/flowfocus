@@ -3,7 +3,7 @@ import Timer from "./components/Timer"
 import Controls from "./components/Controls"
 import SessionSelector from "./components/SessionSelector"
 import Background from "./components/Background"
-import { BackgroundHandles } from "./components/Background";
+import type { BackgroundHandles } from "./components/Background";
 
 function App() {
     const [workSeconds, setWorkSeconds] = useState(25 * 60)
@@ -85,7 +85,7 @@ function App() {
                 />
             </div>
             <Controls start={startTimer} stop={stopTimer} reset={resetTimer} />
-            <Background ref={backgroundRef} isRunning={isRunning} onBreak={onBreak} />
+            <Background ref={backgroundRef} />
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useRef,  useCallback, forwardRef, useImperativeHandle } from "react";
+import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 
 type BackgroundHandles = {
     enableIdleTracking: () => void;
@@ -8,24 +8,25 @@ type BackgroundHandles = {
 };
 
 type BackgroundProps = {
-    isRunning: boolean;
-    onBreak: boolean;
+    // isRunning and onBreak are no longer needed as props for idle tracking logic within Background.tsx
 };
 
-const Background = forwardRef<BackgroundHandles, BackgroundProps>(({ isRunning, onBreak }, ref) => {
+const Background = forwardRef<BackgroundHandles, BackgroundProps>((props, ref) => {
     const rainAudioRef = useRef<HTMLAudioElement>(null);
     const rainImageRef = useRef<HTMLImageElement>(null);
     const idleTimeoutRef = useRef<number | null>(null);
     const fadeInRef = useRef<number | null>(null);
 
     const showIdleBackground = useCallback(() => {
-        if (isRunning && !onBreak && rainImageRef.current) {
+        console.log("showIdleBackground called. rainImageRef.current:", rainImageRef.current);
+        if (rainImageRef.current) {
             rainImageRef.current.classList.add('fade-in');
             rainImageRef.current.style.opacity = '1';
         }
-    }, [isRunning, onBreak]);
+    }, []);
 
     const hideIdleBackground = useCallback(() => {
+        console.log("hideIdleBackground called. rainImageRef.current:", rainImageRef.current);
         if (rainImageRef.current) {
             rainImageRef.current.classList.remove('fade-in');
             rainImageRef.current.style.opacity = '0';
@@ -33,17 +34,17 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>(({ isRunning, 
         if (idleTimeoutRef.current) {
             clearTimeout(idleTimeoutRef.current);
         }
-        if (isRunning && !onBreak) {
-            idleTimeoutRef.current = window.setTimeout(showIdleBackground, 5000);
-        }
-    }, [isRunning, onBreak, showIdleBackground]);
+        // The decision to restart idle timer is now handled by App.tsx calling enableIdleTracking
+    }, []);
 
     const enableIdleTracking = useCallback(() => {
+        console.log("enableIdleTracking called");
         document.addEventListener('mousemove', hideIdleBackground);
         idleTimeoutRef.current = window.setTimeout(showIdleBackground, 5000);
     }, [hideIdleBackground, showIdleBackground]);
 
     const disableIdleTracking = useCallback(() => {
+        console.log("disableIdleTracking called");
         document.removeEventListener('mousemove', hideIdleBackground);
         if (idleTimeoutRef.current) {
             clearTimeout(idleTimeoutRef.current);
@@ -51,6 +52,13 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>(({ isRunning, 
         }
         if (rainImageRef.current) rainImageRef.current.style.opacity = '0';
     }, [hideIdleBackground]);
+
+    useImperativeHandle(ref, () => ({
+        enableIdleTracking,
+        disableIdleTracking,
+        startAudioFadeIn,
+        stopAudioFadeIn,
+    }));
 
     const startAudioFadeIn = useCallback(() => {
         if (rainAudioRef.current) {
@@ -84,13 +92,6 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>(({ isRunning, 
         }
     }, []);
 
-    useImperativeHandle(ref, () => ({
-        enableIdleTracking,
-        disableIdleTracking,
-        startAudioFadeIn,
-        stopAudioFadeIn,
-    }));
-
     return (
         <>
             <div className="sounds">
@@ -104,3 +105,4 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>(({ isRunning, 
 });
 
 export default Background;
+
