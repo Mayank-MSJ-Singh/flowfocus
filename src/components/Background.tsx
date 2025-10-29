@@ -115,10 +115,10 @@ const Background = forwardRef<BackgroundHandles, BackgroundProps>(({ isRunning, 
     return (
         <>
             <div className="sounds">
-                <audio id="rain" src="/public/sounds/rain.mp3" loop ref={rainAudioRef}></audio>
+                <audio id="rain" src="/sounds/rain.mp3" loop ref={rainAudioRef}></audio>
             </div>
             <div className="images">
-                <img id="rainImage" src="/public/images/rain.jpg" alt="Rain background" ref={rainImageRef} />
+                <img id="rainImage" src="/images/rain.jpg" alt="Rain background" ref={rainImageRef} />
             </div>
         </>
     );
